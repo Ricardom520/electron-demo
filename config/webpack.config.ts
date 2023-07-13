@@ -1,6 +1,8 @@
 import { Configuration } from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import { loaderRegax } from './const'
+const CopyWebpackPlugin = require('../plugins/copyWebpackPlugin')
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -24,6 +26,42 @@ const common: Configuration = {
       {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
+      {
+        test: loaderRegax.lessRegex,
+        exclude: loaderRegax.lessModuleRegex,
+        use: [
+          require.resolve('style-loader'),
+          {
+            loader: require.resolve('css-loader'),
+            options: {
+              importLoaders: 3,
+              sourceMap: true
+            }
+          },
+          {
+            loader: 'less-loader'
+          }
+        ]
+      },
+      {
+        test: loaderRegax.lessModuleRegex,
+        use: [
+          require.resolve('style-loader'),
+          {
+            loader: require.resolve('css-loader'),
+            options: {
+              implements: 3,
+              sourceMap: true,
+              modules: {
+                getLocalIdent: '[name]__[local]___[hash:base64:5]'
+              }
+            }
+          },
+          {
+            loader: 'less-loader'
+          }
+        ]
       },
       {
         test: /\.(ico|png|svg|eot|woff?2?)$/,
@@ -63,6 +101,10 @@ const renderer: Configuration = {
       inject: "body",
       template: "./src/web/index.html",
     }),
+    new CopyWebpackPlugin({
+      from: '/src/assets',
+      to: 'assets'
+    })
   ],
 };
 

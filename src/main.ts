@@ -6,9 +6,16 @@ app.whenReady().then(() => {
     webPreferences: {
       preload: path.resolve(__dirname, "preload.js"),
     },
+    // 应用icon Window
+    icon: path.join(__dirname, './assets/logo.ico')
   });
 
-  mainWindow.loadFile("dist/index.html");
+  if (process.platform === 'darwin') {
+    // Mac 图标
+    app.dock.setIcon(path.join(__dirname, './assets/logo.ico'))
+  }
+
+  mainWindow.loadFile("dist/index.html")
 
   // 隐藏菜单栏
   mainWindow.menuBarVisible = false
