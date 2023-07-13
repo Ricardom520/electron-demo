@@ -5,6 +5,10 @@ app.whenReady().then(() => {
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.resolve(__dirname, "preload.js"),
+      // 是否注入node模块
+      nodeIntegration: true,
+      // 允许使用webview
+      webviewTag: true
     },
     // 应用icon Window
     icon: path.join(__dirname, './assets/logo.ico')
