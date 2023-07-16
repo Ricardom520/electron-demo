@@ -6,7 +6,10 @@
     "moduleResolution": "Node",
     "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",
-    "strict": true
+    "strict": true,
+    "paths": {
+      "@/*": ["./src/web/*"]
+    }
   },
   "ts-node": {
     "compilerOptions": {

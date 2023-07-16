@@ -1,8 +1,10 @@
-import path from "node:path";
 import { BrowserWindow, app } from "electron";
+const path = require('path')
+
+export let mainWindow: BrowserWindow
 
 app.whenReady().then(() => {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.resolve(__dirname, "preload.js"),
       // 是否注入node模块

@@ -2,6 +2,7 @@ import { Configuration } from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { loaderRegax } from './const'
+import path from "path";
 const CopyWebpackPlugin = require('../plugins/copyWebpackPlugin')
 
 const isDev = process.env.NODE_ENV === "development";
@@ -11,6 +12,9 @@ const common: Configuration = {
   externals: ["fsevents"],
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".json"],
+    alias: {
+      '@': path.resolve(__dirname, '../src/web')
+    }
   },
   output: {
     publicPath: "./",
@@ -51,10 +55,9 @@ const common: Configuration = {
           {
             loader: require.resolve('css-loader'),
             options: {
-              implements: 3,
               sourceMap: true,
               modules: {
-                getLocalIdent: '[name]__[local]___[hash:base64:5]'
+                localIdentName: '[name]__[local]___[hash:base64:5]'
               }
             }
           },

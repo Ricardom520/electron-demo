@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client"
 import { HashRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { routes } from './routes'
 
+import './index.less'
+
 const BaseRoutes = (
   <Routes>
     {routes.map((item, index) => {
