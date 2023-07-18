@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "antd": "^5.7.0",
+    "electron-builder": "^24.4.0",
     "electron-packager": "^17.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
