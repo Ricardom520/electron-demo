@@ -3,9 +3,12 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { loaderRegax } from './const'
 import path from "path";
+import {entries} from './func'
 const CopyWebpackPlugin = require('../plugins/copyWebpackPlugin')
 
 const isDev = process.env.NODE_ENV === "development";
+
+const {entry, htmlWebpackPlugin} = entries();
 
 const common: Configuration = {
   mode: isDev ? "development" : "production",
@@ -95,20 +98,22 @@ const preload: Configuration = {
 const renderer: Configuration = {
   ...common,
   target: "web",
+  // entry: entry,
   entry: {
-    app: "./src/web/index.tsx",
+    index: "./src/web/index.tsx",
+    loading: "./src/web/loading.tsx"
   },
   plugins: [
     new MiniCssExtractPlugin(),
-    new HtmlWebpackPlugin({
-      inject: "body",
-      template: "./src/web/index.html",
-    }),
+    // new HtmlWebpackPlugin( {
+    //   inject: "body",
+    //   template: "./src/web/index.html",
+    // }),
     new CopyWebpackPlugin({
       from: '/src/assets',
       to: 'assets'
     })
-  ],
+  ].concat(htmlWebpackPlugin),
 };
 
 export default [main, preload, renderer];
