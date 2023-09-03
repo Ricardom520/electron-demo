@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Progress } from 'antd'
 import { urls } from '@/libs/consts'
 import styles from './index.module.less'
@@ -10,10 +10,13 @@ const Home: React.FC = () => {
   const webviewRef = useRef<HTMLWebViewElement>(null)
   const [activeMenu, setActiveMenu] = useState<MenuItem>()
   const [transitionend, setTransitionend] = useState<boolean>(false)
-  const [webviewPercent, setWebviewPercent] = useState<number>(0)
+  // const [webviewPercent, setWebviewPercent] = useState<number>(0)
+  const webviewPercent = useRef<number>(0)
 
   /** 菜单点击 */
   const onItemClick = (item: MenuItem) => {
+    webviewPercent.current = 0
+    // setWebviewPercent(0)
     setActiveMenu(item)
   }
 
@@ -26,7 +29,8 @@ const Home: React.FC = () => {
     if (webviewRef.current) {
       webviewRef.current.addEventListener('dom-ready', () => {
         console.log('dom=reayd')
-        setWebviewPercent(100)
+        // setWebviewPercent(100)
+        webviewPercent.current = 100
       })
     } 
   }, [transitionend])
@@ -36,22 +40,28 @@ const Home: React.FC = () => {
       if (timer.current) return
 
       timer.current = setInterval(() => {
-        if (webviewPercent + 10 === 100) {
+        console.log('=====')
+        if (webviewPercent.current + 10 === 100) {
           clearInterval(timer.current)
           timer.current = undefined
         } else {
-          setWebviewPercent(webviewPercent + 10)
+          webviewPercent.current += 10
+          // setWebviewPercent(webviewPercent + 10)
         }
       }, 200)
     }
   }, [activeMenu, transitionend])
 
   useEffect(() => {
-    if (webviewPercent === 100) {
+    if (webviewPercent.current === 100) {
       clearInterval(timer.current)
       timer.current = undefined
     }
   }, [webviewPercent])
+
+  useLayoutEffect(() => {
+    window.electronAPI.pageReady('home')
+  }, [])
 
   return (
     <div className={styles.home}>
@@ -72,8 +82,8 @@ const Home: React.FC = () => {
         {transitionend && (
           <>
           <webview ref={webviewRef} style={{width: '100%', height: '100%'}} src={activeMenu?.url}></webview>
-          {webviewPercent !== 100 && (
-            <Progress size='small' showInfo={false} className={styles.progress} percent={webviewPercent} strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }} />
+          {webviewPercent.current !== 100 && (
+            <Progress size='small' showInfo={false} className={styles.progress} percent={webviewPercent.current} strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }} />
           )}
           </>
         ) }
