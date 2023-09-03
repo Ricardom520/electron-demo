@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from "electron";
+import { BrowserWindow, app, ipcMain } from "electron";
 const path = require('path')
 
 export let mainWindow: BrowserWindow
@@ -30,18 +30,25 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools({ mode: "detach" });
   mainWindow.loadFile("dist/index.html")
 
-  mainWindow.once("ready-to-show", () => {
-    console.log('???????????????')
-    // loadingWindow.hide()
-    // loadingWindow.close()
+  ipcMain.on('pageReady', (event, title) => {
     loadingWindow.destroy()
     mainWindow.show()
   })
 
+  // ipcMain.handle("createNotebook", async (e, name: string) => {
+  //   return await ioc.get(NotebooksController).create(name);
+  // });
+  
+  // ipcMain.handle("getNotebooks", async () => {
+  //   return await ioc.get(NotebooksController).getAll();
+  // });
 }
 
 const showLoading = () => {
   loadingWindow = new BrowserWindow({
+    webPreferences: {
+      preload: path.resolve(__dirname, "preload.js"),
+    },
     show: false,
     frame: false, // 无边框（窗口、工具栏等），只包含网页内容
     width: 700,
@@ -55,9 +62,14 @@ const showLoading = () => {
   loadingWindow.loadFile('dist/loading.html');
   loadingWindow.show();
 
-  setTimeout(() => {
-    createWindow()
-  }, 2000)
+  ipcMain.on('pageReady', (event, title) => {
+    console.log(title)
+    if (title === 'loading') {
+      setTimeout(() => {
+        createWindow()
+      }, 2000)
+    }
+  })
 }
 
 app.whenReady().then(() => {

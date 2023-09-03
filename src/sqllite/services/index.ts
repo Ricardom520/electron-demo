@@ -9,7 +9,7 @@ interface NotebookModal {
 }
 
 @injectable()
-export class NotebookService {
+class NotebookService {
   name = 'notebooks'
   constructor (@inject(LocalDB) public localDB: LocalDB) {}
 
@@ -40,3 +40,5 @@ export class NotebookService {
     return await this.localDB.db.table<NotebookModal>(this.name).select('*')
   }
 }
+
+export default NotebookService
