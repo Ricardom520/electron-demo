@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Progress } from 'antd'
+import { PoweroffOutlined } from '@ant-design/icons'
 import { urls } from '@/libs/consts'
 import styles from './index.module.less'
 
@@ -10,11 +11,14 @@ const Home: React.FC = () => {
   const webviewRef = useRef<HTMLWebViewElement>(null)
   const [activeMenu, setActiveMenu] = useState<MenuItem>()
   const [transitionend, setTransitionend] = useState<boolean>(false)
+  const [showWebview, setShowWebview] = useState<boolean>(true)
   const [webviewPercent, setWebviewPercent] = useState<number>(0)
 
   /** 菜单点击 */
   const onItemClick = (item: MenuItem) => {
+    setTransitionend(false)
     setActiveMenu(item)
+    setShowWebview(true)
   }
 
   const onWebviewAnimationEnd = () => {
@@ -22,40 +26,42 @@ const Home: React.FC = () => {
   }
 
   useEffect(() => {
-    console.log('webviewRef:', webviewRef)
     if (webviewRef.current) {
       webviewRef.current.addEventListener('dom-ready', () => {
         console.log('dom=reayd')
         setWebviewPercent(100)
       })
     } 
-  }, [transitionend])
+  }, [showWebview])
 
   useEffect(() => {
-    if (transitionend && activeMenu) {
+    if (showWebview && activeMenu) {
       if (timer.current) return
 
       timer.current = setInterval(() => {
-        if (webviewPercent + 10 === 100) {
+        if (webviewPercent < 100) {
+          setWebviewPercent(webviewPercent + 10)
+        } else {
           clearInterval(timer.current)
           timer.current = undefined
-        } else {
-          setWebviewPercent(webviewPercent + 10)
+          setWebviewPercent(0)
         }
       }, 200)
     }
-  }, [activeMenu, transitionend])
+  }, [activeMenu, showWebview])
 
   useEffect(() => {
-    if (webviewPercent === 100) {
+    if (webviewPercent >= 100) {
       clearInterval(timer.current)
       timer.current = undefined
+      setWebviewPercent(0)
     }
   }, [webviewPercent])
 
   return (
     <div className={styles.home}>
-      <ul className={styles.menu + ' ' + (transitionend ? styles.scroll : '')}>
+      <div className={styles.menubox + ' ' + (showWebview ? styles.scroll : '')}>
+        <ul className={styles.menu}>
         {urls.map((item, index) => {
           return (
             <li className={styles.item + ' ' + (activeMenu?.url === item.url ? styles.active : '')} key={`url_${index}`} onClick={() => onItemClick(item)}>
@@ -66,13 +72,15 @@ const Home: React.FC = () => {
             </li>
           )
         })}
-      </ul>
-      <div onAnimationEnd={onWebviewAnimationEnd} style={transitionend ? { position: 'relative', top: 0, left: 0, transform: 'none'} : undefined } className={styles['webview-box'] + ' ' + (activeMenu ? styles.show : '')}>
-        
-        {transitionend && (
+        </ul>
+        {showWebview && <div className={styles['menu-tools']}>
+          <div className={styles['menu-tools-item']} onClick={() => setShowWebview(false)}><PoweroffOutlined style={{marginRight: '5px'}} />返回</div></div>}
+      </div>
+      <div onAnimationEnd={onWebviewAnimationEnd} style={showWebview ? { position: 'relative', top: 0, left: 0, transform: 'none'} : undefined } className={styles['webview-box'] + ' ' + (activeMenu ? styles.show : '')}>
+        {showWebview && (
           <>
           <webview ref={webviewRef} style={{width: '100%', height: '100%'}} src={activeMenu?.url}></webview>
-          {webviewPercent !== 100 && (
+          {webviewPercent !== 100 && !transitionend && (
             <Progress size='small' showInfo={false} className={styles.progress} percent={webviewPercent} strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }} />
           )}
           </>
