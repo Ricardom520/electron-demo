@@ -7,16 +7,17 @@ async function globby(absoluteForm, options) {
   console.log('===============')
   console.log('absoluteForm:', await fs.readdirSync(absoluteForm))
   try {
-    const result = await fs.readdirSync(absoluteForm)
-      .filter(filte => !ignore.includes(filte))
-      .map(file => {
+    const result = await fs
+      .readdirSync(absoluteForm)
+      .filter((filte) => !ignore.includes(filte))
+      .map((file) => {
         return {
           file_path: path.join(absoluteForm, file),
           file_name: file
         }
       })
 
-      return result || []
+    return result || []
   } catch (err) {
     console.error(err)
   }

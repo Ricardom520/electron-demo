@@ -1,38 +1,43 @@
-import { Configuration } from "webpack";
-import HtmlWebpackPlugin from "html-webpack-plugin";
-import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import { Configuration } from 'webpack'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import { loaderRegax } from './const'
-import path from "path";
-import {entries} from './func'
+import path from 'path'
+import { entries } from './func'
 const CopyWebpackPlugin = require('../plugins/copyWebpackPlugin')
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = process.env.NODE_ENV === 'development'
 
-const {entry, htmlWebpackPlugin} = entries();
+const { entry, htmlWebpackPlugin } = entries()
 
 const common: Configuration = {
-  mode: isDev ? "development" : "production",
-  externals: ["fsevents"],
+  mode: isDev ? 'development' : 'production',
+  externals: [
+    'fsevents',
+    {
+      sqlite3: 'commonjs sqlite3'
+    }
+  ],
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".json"],
+    extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
     alias: {
       '@': path.resolve(__dirname, '../src/web')
     }
   },
   output: {
-    publicPath: "./",
-    assetModuleFilename: "assets/[name][ext]",
+    publicPath: './',
+    assetModuleFilename: 'assets/[name][ext]'
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: "ts-loader",
+        loader: 'ts-loader'
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
         test: loaderRegax.lessRegex,
@@ -70,38 +75,49 @@ const common: Configuration = {
         ]
       },
       {
-        test: /\.(ico|png|svg|eot|woff?2?)$/,
-        type: "asset/resource",
+        test: /\.(ico|png|jpg|svg|eot|woff?2?)$/,
+        type: 'asset/resource'
       },
-    ],
+      {
+        test: /\.html$/i,
+        loader: 'html-loader',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.cs$/i,
+        loader: 'file-loader',
+        exclude: /node_modules/
+      }
+    ]
   },
   watch: isDev,
-  devtool: isDev ? "source-map" : undefined,
-};
+  devtool: isDev ? 'source-map' : undefined
+}
 
 const main: Configuration = {
   ...common,
-  target: "electron-main",
+  target: 'electron-main',
   entry: {
-    main: "./src/main.ts",
-  },
-};
+    main: './src/main.ts'
+  }
+}
 
 const preload: Configuration = {
   ...common,
-  target: "electron-preload",
+  target: 'electron-preload',
   entry: {
-    preload: "./src/preload.ts",
-  },
-};
+    preload: './src/preload.ts'
+  }
+}
 
 const renderer: Configuration = {
   ...common,
-  target: "web",
+  target: 'web',
   // entry: entry,
   entry: {
-    index: "./src/web/index.tsx",
-    loading: "./src/web/loading.tsx"
+    index: './src/web/index.tsx',
+    loading: './src/web/loading.tsx',
+    update: './src/web/update.tsx'
   },
   plugins: [
     new MiniCssExtractPlugin(),
@@ -113,7 +129,7 @@ const renderer: Configuration = {
       from: '/src/assets',
       to: 'assets'
     })
-  ].concat(htmlWebpackPlugin),
-};
+  ].concat(htmlWebpackPlugin)
+}
 
-export default [main, preload, renderer];
+export default [main, preload, renderer]

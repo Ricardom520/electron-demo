@@ -1,4 +1,4 @@
-import { createRoot } from "react-dom/client"
+import { createRoot } from 'react-dom/client'
 import { HashRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { routes } from './routes'
 
@@ -13,6 +13,4 @@ const BaseRoutes = (
   </Routes>
 )
 
-createRoot(document.getElementById("root") as Element).render(
-    <HashRouter children={BaseRoutes} />
-);
+createRoot(document.getElementById('root') as Element).render(<HashRouter children={BaseRoutes} />)

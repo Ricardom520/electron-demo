@@ -28,7 +28,7 @@ class CopyWebpackPlugin {
         // 将输入路径变成绝对路径
         const absoluteForm = path.isAbsolute(from) ? from : path.join(context, from)
         // globby(要处理的文件夹)，第二个参数是忽略的文件
-        const paths = await globby(absoluteForm, {ignore})
+        const paths = await globby(absoluteForm, { ignore })
         console.log('paths:', paths)
         // 读取文件内容
         const files = await Promise.all(
@@ -43,17 +43,17 @@ class CopyWebpackPlugin {
           })
         )
         // 生成webpack资源
-        const assets = files.map(file => {
+        const assets = files.map((file) => {
           const { file_data, filename } = file
           const source = new RawSource(file_data)
-          
+
           return {
             source,
             filename
           }
         })
         // 添加到compilation输出出去
-        assets.forEach(asset => {
+        assets.forEach((asset) => {
           const { filename, source } = asset
           compilation.emitAsset(filename, source)
         })

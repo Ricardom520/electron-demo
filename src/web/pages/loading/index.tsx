@@ -6,8 +6,8 @@ const Loading: React.FC = () => {
     window.electronAPI.pageReady('loading')
   }, [])
   return (
-    <div className="container">
-      <div className="loader">
+    <div className='container'>
+      <div className='loader'>
         <span></span>
         <span></span>
         <span></span>

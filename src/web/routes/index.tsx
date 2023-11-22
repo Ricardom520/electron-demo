@@ -11,5 +11,5 @@ export const routes: RoutesItem[] = [
     title: 'home',
     component: <Home />,
     path: '/'
-  },
+  }
 ]
